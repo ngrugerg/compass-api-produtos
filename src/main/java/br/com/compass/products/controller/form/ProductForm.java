@@ -33,5 +33,15 @@ public class ProductForm {
 	public Product converter(ProductsRepository productsRepository) {
 		return new Product(name, description, price);
 	}
+	
+	public Product update(Integer id, ProductsRepository productsRepository) {
+		Product product = productsRepository.getById(id);
+		
+		product.setName(this.name);
+		product.setDescription(this.description);
+		product.setPrice(this.price);
+		
+		return product;
+	}
 
 }

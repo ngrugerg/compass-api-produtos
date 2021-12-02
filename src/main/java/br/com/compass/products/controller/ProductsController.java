@@ -11,10 +11,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import br.com.compass.products.controller.dto.ProductDto;
 import br.com.compass.products.controller.form.ProductForm;
+import br.com.compass.products.model.ExceptionResponse;
 import br.com.compass.products.model.Product;
 import br.com.compass.products.repository.ProductsRepository;
 
@@ -32,12 +36,12 @@ public class ProductsController {
 
 	@Autowired
 	private ProductsRepository productsRepository;
-	
+
 	@GetMapping
 	public Page<ProductDto> list(@RequestParam(required = false) String name,
 			@PageableDefault(sort = "name", direction = Direction.ASC, page = 0, size = 10) Pageable pageable) {
-		
-		if(name == null) {
+
+		if (name == null) {
 			Page<Product> products = productsRepository.findAll(pageable);
 			return ProductDto.convert(products);
 		} else {
@@ -45,25 +49,49 @@ public class ProductsController {
 			return ProductDto.convert(products);
 		}
 	}
-	
+
 	@GetMapping("/{id}")
-	public ResponseEntity<ProductDto> findById(@PathVariable Integer id){
+	public ResponseEntity<ProductDto> findById(@PathVariable Integer id) {
 		Optional<Product> product = productsRepository.findById(id);
 		if (product.isPresent()) {
 			return ResponseEntity.ok(new ProductDto(product.get()));
 		}
-		
-		return ResponseEntity.notFound().build();
+
+		//return ResponseEntity.notFound().build();
+		throw new ExceptionResponse("Produto não encontrado", HttpStatus.BAD_REQUEST.value());
 	}
-	
+
 	@PostMapping
 	@Transactional
-	public ResponseEntity<ProductDto> create(@RequestBody @Valid ProductForm form, UriComponentsBuilder uriBuilder){
+	public ResponseEntity<ProductDto> create(@RequestBody @Valid ProductForm form, UriComponentsBuilder uriBuilder) {
 		Product product = form.converter(productsRepository);
 		productsRepository.save(product);
-		
+
 		URI uri = uriBuilder.path("/products/{id}").buildAndExpand(product.getId()).toUri();
 		return ResponseEntity.created(uri).body(new ProductDto(product));
 	}
-	
+
+	@PutMapping("/{id}")
+	@Transactional
+	public ResponseEntity<ProductDto> update(@PathVariable Integer id, @RequestBody @Valid ProductForm form) {
+		Optional<Product> optional = productsRepository.findById(id);
+		if (optional.isPresent()) {
+			Product product = form.update(id, productsRepository);
+			return ResponseEntity.ok(new ProductDto(product));
+		}
+		return ResponseEntity.notFound().build();
+	}
+
+	@DeleteMapping("{id}")
+	@Transactional
+	public ResponseEntity<?> delete(@PathVariable Integer id) {
+		Optional<Product> optional = productsRepository.findById(id);
+		if (optional.isPresent()) {
+			productsRepository.deleteById(id);
+			return ResponseEntity.ok().build();
+		}
+
+		return ResponseEntity.notFound().build();
+	}
+
 }
