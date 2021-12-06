@@ -1,18 +1,30 @@
 package br.com.compass.products.model;
 
-public class ExceptionResponse extends RuntimeException {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
+public class ExceptionResponse {
+	
+	private Integer statusCode;
 	private String message;
-	private Integer code;
-
-	public ExceptionResponse(String message, Integer code) {
+	
+	public ExceptionResponse(Integer statusCode, String message) {
+		this.statusCode = statusCode;
 		this.message = message;
-		this.code = code;
 	}
 
+	public Integer getStatusCode() {
+		return statusCode;
+	}
+
+	public void setStatusCode(Integer statusCode) {
+		this.statusCode = statusCode;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	
+	
 }

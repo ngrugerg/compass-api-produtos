@@ -11,9 +11,9 @@ import br.com.compass.products.repository.ProductsRepository;
 
 public class ProductForm {
 
-	@NotNull @NotEmpty @Length(min = 3)
+	@NotNull @NotEmpty @Length(min = 3, max = 30)
 	private String name;
-	@NotNull @NotEmpty @Length(min = 3)
+	@NotNull @NotEmpty @Length(min = 3, max = 50) 
 	private String description;
 	@NotNull @DecimalMin(value = "1.0")
 	private Double price;
