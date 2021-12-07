@@ -30,12 +30,12 @@ public class ExceptionHandler {
 
 		return exceptionResponse;
 	}
-
-//	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-//	@org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentNotValidException.class)
-//	public ExceptionResponse NotValidException(MethodArgumentNotValidException exception) {
-//		return new ExceptionResponse(HttpStatus.BAD_REQUEST.value(), "Form error");
-//	}
+	
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+	@org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ExceptionResponse NotValidException(MethodArgumentTypeMismatchException exception) {
+		return new ExceptionResponse(HttpStatus.BAD_REQUEST.value(), "Page Unavailable.");
+	}
 
 	@ResponseStatus(code = HttpStatus.NOT_FOUND)
 	@org.springframework.web.bind.annotation.ExceptionHandler(EntityNotFoundException.class)
@@ -54,11 +54,11 @@ public class ExceptionHandler {
 	public ExceptionResponse NotValidException(HttpRequestMethodNotSupportedException exception) {
 		return new ExceptionResponse(HttpStatus.METHOD_NOT_ALLOWED.value(), "Method not allowed.");
 	}
-
-	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	@org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentTypeMismatchException.class)
-	public ExceptionResponse NotValidException(MethodArgumentTypeMismatchException exception) {
-		return new ExceptionResponse(HttpStatus.BAD_REQUEST.value(), "Page Unavailable.");
+	
+	@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+	@org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
+	public ExceptionResponse NotValidException() {
+		return new ExceptionResponse (HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal Server Error.");
 	}
 
 }

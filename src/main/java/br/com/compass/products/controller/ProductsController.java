@@ -41,23 +41,22 @@ public class ProductsController {
 			@PageableDefault(sort = "name", direction = Direction.ASC, page = 0, size = 10) Pageable pageable) {
 		Page<Product> products = productsRepository.findAll(pageable);
 		return ProductDto.convert(products);
-
-	}
-
-	@GetMapping("/search")
-	public Page<ProductDto> productsSearch(
-			@PageableDefault(sort = "name", direction = Sort.Direction.DESC, page = 0, size = 10) Pageable pageable,
-			@RequestParam(required = false) Double maxPrice, @RequestParam(required = false) Double minPrice,
-			@RequestParam(required = false) String q) {
-
-		Page<Product> products = productsRepository.findBySearch(pageable, q, minPrice, maxPrice);
-		return ProductDto.convert(products);
 	}
 
 	@GetMapping("/{id}")
 	public ProductDto findById(@PathVariable Integer id) {
 		Product product = productsRepository.getById(id);
 		return new ProductDto(product);
+	}
+
+	@GetMapping("/search")
+	public Page<ProductDto> productsSearch(
+			@PageableDefault(sort = "name", direction = Sort.Direction.ASC, page = 0, size = 10) Pageable pageable,
+			@RequestParam(required = false) Double maxPrice, @RequestParam(required = false) Double minPrice,
+			@RequestParam(required = false) String q) {
+
+		Page<Product> products = productsRepository.findBySearch(pageable, q, minPrice, maxPrice);
+		return ProductDto.convert(products);
 	}
 
 	@PostMapping
@@ -82,7 +81,6 @@ public class ProductsController {
 	public ResponseEntity<?> delete(@PathVariable Integer id) {
 		productsRepository.deleteById(id);
 		return ResponseEntity.ok().build();
-
 	}
 
 }
